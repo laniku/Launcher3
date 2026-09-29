@@ -37,10 +37,4 @@ public class LauncherBackupAgentHelper extends BackupAgentHelper {
         }
         sBackupManager.dataChanged();
     }
-
-
-    @Override
-    public void onCreate() {
-        addHelper(LauncherBackupHelper.LAUNCHER_PREFIX, new LauncherBackupHelper(this));
-    }
 }

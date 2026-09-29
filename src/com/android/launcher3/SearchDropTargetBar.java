@@ -49,7 +49,6 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     private int mBarHeight;
     private boolean mDeferOnDragEnd = false;
 
-    private Drawable mPreviousBackground;
     private boolean mEnableDropDownDropTargets;
 
     public SearchDropTargetBar(Context context, AttributeSet attrs) {
@@ -215,14 +214,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
 
     public void onSearchPackagesChanged(boolean searchVisible, boolean voiceVisible) {
         if (mQSBSearchBar != null) {
-            Drawable bg = mQSBSearchBar.getBackground();
-            if (bg != null && (!searchVisible && !voiceVisible)) {
-                // Save the background and disable it
-                mPreviousBackground = bg;
-                mQSBSearchBar.setBackgroundResource(0);
-            } else if (mPreviousBackground != null && (searchVisible || voiceVisible)) {
-                // Restore the background
-                mQSBSearchBar.setBackground(mPreviousBackground);
+            if (mQSBSearchBar.getBackground() == null) {
+                mQSBSearchBar.setBackgroundResource(R.drawable.search_frame);
             }
         }
     }

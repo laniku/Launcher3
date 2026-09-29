@@ -464,7 +464,7 @@ public class Launcher extends Activity
         Selection.setSelection(mDefaultKeySsb, 0);
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        registerReceiver(mCloseSystemDialogsReceiver, filter);
+        Utilities.registerReceiver(this, mCloseSystemDialogsReceiver, filter);
 
         updateGlobalIcons();
 
@@ -1486,7 +1486,7 @@ public class Launcher extends Activity
         final IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
-        registerReceiver(mReceiver, filter);
+        Utilities.registerReceiver(this, mReceiver, filter);
         FirstFrameAnimatorHelper.initializeDrawListener(getWindow().getDecorView());
         mAttached = true;
         mVisible = true;
@@ -2223,8 +2223,14 @@ public class Launcher extends Activity
      */
     public void onClickSearchButton(View v) {
         v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
-        onSearchRequested();
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        if (searchManager.getGlobalSearchActivity() == null) {
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(null, intent, "onClickSearchButton");
+        } else {
+            onSearchRequested();
+        }
     }
 
     /**
@@ -3329,10 +3335,12 @@ public class Launcher extends Activity
             invalidatePressedFocusedStates(searchButtonContainer, searchButton);
             return true;
         } else {
-            // We disable both search and voice search when there is no global search provider
-            if (searchButtonContainer != null) searchButtonContainer.setVisibility(View.GONE);
+            if (searchButtonContainer != null) searchButtonContainer.setVisibility(View.VISIBLE);
+            if (searchButton != null) {
+                searchButton.setImageResource(R.drawable.ic_home_search_normal_holo);
+                searchButton.setVisibility(View.VISIBLE);
+            }
             if (voiceButtonContainer != null) voiceButtonContainer.setVisibility(View.GONE);
-            if (searchButton != null) searchButton.setVisibility(View.GONE);
             if (voiceButton != null) voiceButton.setVisibility(View.GONE);
             updateVoiceButtonProxyVisible(false);
             return false;

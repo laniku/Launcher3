@@ -95,19 +95,19 @@ public class LauncherAppState {
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
         filter.addDataScheme("package");
-        sContext.registerReceiver(mModel, filter);
+        Utilities.registerReceiver(sContext, mModel, filter);
         filter = new IntentFilter();
         filter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE);
         filter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         filter.addAction(Intent.ACTION_LOCALE_CHANGED);
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
-        sContext.registerReceiver(mModel, filter);
+        Utilities.registerReceiver(sContext, mModel, filter);
         filter = new IntentFilter();
         filter.addAction(SearchManager.INTENT_GLOBAL_SEARCH_ACTIVITY_CHANGED);
-        sContext.registerReceiver(mModel, filter);
+        Utilities.registerReceiver(sContext, mModel, filter);
         filter = new IntentFilter();
         filter.addAction(SearchManager.INTENT_ACTION_SEARCHABLES_CHANGED);
-        sContext.registerReceiver(mModel, filter);
+        Utilities.registerReceiver(sContext, mModel, filter);
 
         // Register for changes to the favorites
         ContentResolver resolver = sContext.getContentResolver();

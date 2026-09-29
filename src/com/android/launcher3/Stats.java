@@ -78,7 +78,7 @@ public class Stats {
         }
 
         if (DEBUG_BROADCASTS) {
-            launcher.registerReceiver(
+                Utilities.registerReceiver(launcher,
                     new BroadcastReceiver() {
                         @Override
                         public void onReceive(Context context, Intent intent) {
@@ -87,8 +87,7 @@ public class Stats {
                         }
                     },
                     new IntentFilter(ACTION_LAUNCH),
-                    PERM_LAUNCH,
-                    null
+                        PERM_LAUNCH
             );
         }
     }

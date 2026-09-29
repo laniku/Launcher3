@@ -23,29 +23,24 @@
 
     <permission
         android:name="com.android.launcher3.permission.PRELOAD_WORKSPACE"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="system|signature" />
     <permission
         android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="dangerous"
         android:label="@string/permlab_install_shortcut"
         android:description="@string/permdesc_install_shortcut" />
     <permission
         android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="dangerous"
         android:label="@string/permlab_uninstall_shortcut"
         android:description="@string/permdesc_uninstall_shortcut"/>
     <permission
         android:name="com.android.launcher3.permission.READ_SETTINGS"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="normal"
         android:label="@string/permlab_read_settings"
         android:description="@string/permdesc_read_settings"/>
     <permission
         android:name="com.android.launcher3.permission.WRITE_SETTINGS"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="normal"
         android:label="@string/permlab_write_settings"
         android:description="@string/permdesc_write_settings"/>
@@ -68,6 +63,19 @@
     <uses-permission android:name="com.android.launcher3.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher3.permission.RECEIVE_LAUNCH_BROADCASTS" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.WEB_SEARCH" />
+        </intent>
+        <intent>
+            <action android:name="android.search.action.GLOBAL_SEARCH" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.android.launcher3.LauncherApplication"
         android:label="@string/application_name"
@@ -82,7 +90,8 @@
             android:stateNotNeeded="true"
             android:theme="@style/Theme"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="nosensor">
+            android:screenOrientation="nosensor"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
@@ -95,7 +104,8 @@
             android:name="com.android.launcher3.ToggleWeightWatcher"
             android:label="@string/toggle_weight_watcher"
             android:enabled="@bool/debug_memory_enabled"
-            android:icon="@mipmap/ic_launcher_home">
+            android:icon="@mipmap/ic_launcher_home"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -109,7 +119,8 @@
             android:label="@string/pick_wallpaper"
             android:icon="@mipmap/ic_launcher_wallpaper"
             android:finishOnCloseSystemDialogs="true"
-            android:process=":wallpaper_chooser">
+            android:process=":wallpaper_chooser"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SET_WALLPAPER" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -122,7 +133,8 @@
             android:label="@string/crop_wallpaper"
             android:icon="@mipmap/ic_launcher_wallpaper"
             android:finishOnCloseSystemDialogs="true"
-            android:process=":wallpaper_chooser">
+            android:process=":wallpaper_chooser"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.service.wallpaper.CROP_AND_SET_WALLPAPER" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -138,6 +150,7 @@
             android:enabled="@bool/debug_memory_enabled"
             android:excludeFromRecents="true"
             android:icon="@mipmap/ic_launcher_home"
+            android:exported="true"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -154,7 +167,8 @@
         <!-- Intent received used to prepopulate the default workspace. -->
         <receiver
             android:name="com.android.launcher3.PreloadReceiver"
-            android:permission="com.android.launcher3.permission.PRELOAD_WORKSPACE">
+            android:permission="com.android.launcher3.permission.PRELOAD_WORKSPACE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.launcher3.action.PRELOAD_WORKSPACE" />
             </intent-filter>
@@ -163,7 +177,8 @@
         <!-- Intent received used to install shortcuts from other applications -->
         <receiver
             android:name="com.android.launcher3.InstallShortcutReceiver"
-            android:permission="com.android.launcher3.permission.INSTALL_SHORTCUT">
+            android:permission="com.android.launcher.permission.INSTALL_SHORTCUT"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.launcher3.action.INSTALL_SHORTCUT" />
             </intent-filter>
@@ -172,7 +187,8 @@
         <!-- Intent received used to uninstall shortcuts from other applications -->
         <receiver
             android:name="com.android.launcher3.UninstallShortcutReceiver"
-            android:permission="com.android.launcher3.permission.UNINSTALL_SHORTCUT">
+            android:permission="com.android.launcher.permission.UNINSTALL_SHORTCUT"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.launcher3.action.UNINSTALL_SHORTCUT" />
             </intent-filter>
@@ -187,7 +203,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.android.launcher3.PackageChangedReceiver" >
+        <receiver
+            android:name="com.android.launcher3.PackageChangedReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_CHANGED"/>
                 <action android:name="android.intent.action.PACKAGE_REPLACED"/>

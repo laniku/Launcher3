@@ -18,8 +18,10 @@ package com.android.launcher3;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
@@ -33,6 +35,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +48,7 @@ import java.util.ArrayList;
  */
 final class Utilities {
     private static final String TAG = "Launcher.Utilities";
+    private static final float ICON_DRAWABLE_SCALE = 0.88f;
 
     private static int sIconWidth = -1;
     private static int sIconHeight = -1;
@@ -57,6 +61,21 @@ final class Utilities {
     private static final Paint sDisabledPaint = new Paint();
     private static final Rect sOldBounds = new Rect();
     private static final Canvas sCanvas = new Canvas();
+
+    static void registerReceiver(Context context, BroadcastReceiver receiver,
+            IntentFilter filter) {
+        registerReceiver(context, receiver, filter, null);
+    }
+
+    static void registerReceiver(Context context, BroadcastReceiver receiver,
+            IntentFilter filter, String broadcastPermission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, filter, broadcastPermission, null,
+                    Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            context.registerReceiver(receiver, filter, broadcastPermission, null);
+        }
+    }
 
     static {
         sCanvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG,
@@ -143,6 +162,8 @@ final class Utilities {
                     width = (int) (height * ratio);
                 }
             }
+            width = Math.max(1, Math.round(width * ICON_DRAWABLE_SCALE));
+            height = Math.max(1, Math.round(height * ICON_DRAWABLE_SCALE));
 
             // no intrinsic size --> use default size
             int textureWidth = sIconTextureWidth;

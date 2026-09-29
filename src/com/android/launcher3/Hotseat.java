@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -170,9 +171,69 @@ public class Hotseat extends FrameLayout {
             // the hotseat in order regardless of which orientation they were added
             int x = getCellXFromOrder(mAllAppsButtonRank);
             int y = getCellYFromOrder(mAllAppsButtonRank);
-            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(x,y,1,1);
+            int spanX = 1;
+            int spanY = 1;
+            if (hasVerticalHotseat() && mContent.getCountY() % 2 == 0) {
+                y = mContent.getCountY() / 2 - 1;
+                spanY = 2;
+            } else if (!hasVerticalHotseat() && mContent.getCountX() % 2 == 0) {
+                x = mContent.getCountX() / 2 - 1;
+                spanX = 2;
+            }
+            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(x, y, spanX, spanY);
             lp.canReorder = false;
             mContent.addViewToCellLayout(allAppsButton, -1, 0, lp, true);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mContent == null) {
+            return;
+        }
+
+        final boolean vertical = hasVerticalHotseat();
+        final ViewGroup shortcuts = mContent.getShortcutsAndWidgets();
+        final ArrayList<View> children = new ArrayList<View>();
+        for (int i = 0; i < shortcuts.getChildCount(); i++) {
+            View child = shortcuts.getChildAt(i);
+            int center = vertical ? child.getTop() + child.getHeight() / 2
+                    : child.getLeft() + child.getWidth() / 2;
+            int insertAt = children.size();
+            while (insertAt > 0) {
+                View previous = children.get(insertAt - 1);
+                int previousCenter = vertical
+                        ? previous.getTop() + previous.getHeight() / 2
+                        : previous.getLeft() + previous.getWidth() / 2;
+                if (previousCenter <= center) {
+                    break;
+                }
+                insertAt--;
+            }
+            children.add(insertAt, child);
+        }
+        if (children.size() < 3) {
+            return;
+        }
+
+        View first = children.get(0);
+        View last = children.get(children.size() - 1);
+        float firstCenter = vertical ? first.getTop() + first.getHeight() / 2f
+                : first.getLeft() + first.getWidth() / 2f;
+        float lastCenter = vertical ? last.getTop() + last.getHeight() / 2f
+                : last.getLeft() + last.getWidth() / 2f;
+        for (int i = 0; i < children.size(); i++) {
+            View child = children.get(i);
+            float currentCenter = vertical ? child.getTop() + child.getHeight() / 2f
+                    : child.getLeft() + child.getWidth() / 2f;
+            float targetCenter = firstCenter + (lastCenter - firstCenter) * i
+                    / (children.size() - 1);
+            if (vertical) {
+                child.setTranslationY(targetCenter - currentCenter);
+            } else {
+                child.setTranslationX(targetCenter - currentCenter);
+            }
         }
     }
 

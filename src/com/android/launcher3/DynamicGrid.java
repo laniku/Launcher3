@@ -176,7 +176,7 @@ class DeviceProfile {
         // Hotseat
         hotseatIconSize = invDistWeightedInterpolate(minWidth, minHeight, points);
         hotseatIconSizePx = DynamicGrid.pxFromDp(hotseatIconSize, dm);
-        hotseatAllAppsRank = (int) (numColumns / 2);
+        hotseatAllAppsRank = (int) numHotseatIcons / 2;
 
         // Calculate other vars based on Configuration
         updateFromConfiguration(resources, wPx, hPx, awPx, ahPx);
@@ -194,24 +194,26 @@ class DeviceProfile {
         cellWidthPx = iconSizePx;
         cellHeightPx = iconSizePx + (int) Math.ceil(fm.bottom - fm.top);
 
-        // At this point, if the cells do not fit into the available height, then we need
-        // to shrink the icon size
-        /*
-        Rect padding = getWorkspacePadding(isLandscape ?
-                CellLayout.LANDSCAPE : CellLayout.PORTRAIT);
-        int h = (int) (numRows * cellHeightPx) + padding.top + padding.bottom;
-        if (h > availableHeightPx) {
-            float delta = h - availableHeightPx;
-            int deltaPx = (int) Math.ceil(delta / numRows);
-            iconSizePx -= deltaPx;
-            iconSize = DynamicGrid.dpiFromPx(iconSizePx, dm);
-            cellWidthPx = iconSizePx;
-            cellHeightPx = iconSizePx + (int) Math.ceil(fm.bottom - fm.top);
-        }
-        */
-
         // Hotseat
         hotseatBarHeightPx = iconSizePx + 4 * edgeMarginPx;
+        int textHeightPx = cellHeightPx - iconSizePx;
+        for (int i = 0; i < 2; i++) {
+            Rect workspacePadding = getWorkspacePadding(isLandscape
+                    ? CellLayout.LANDSCAPE : CellLayout.PORTRAIT);
+            int availableCellHeight = (availableHeightPx - workspacePadding.top
+                    - workspacePadding.bottom) / Math.max(1, (int) numRows);
+            int fittedIconSizePx = Math.max(1, Math.min(iconSizePx,
+                    availableCellHeight - textHeightPx));
+            if (fittedIconSizePx == iconSizePx) {
+                break;
+            }
+            iconSizePx = fittedIconSizePx;
+            iconSize = DynamicGrid.dpiFromPx(iconSizePx, dm);
+            cellWidthPx = iconSizePx;
+            cellHeightPx = iconSizePx + textHeightPx;
+            hotseatBarHeightPx = iconSizePx + 4 * edgeMarginPx;
+            hotseatIconSizePx = Math.min(hotseatIconSizePx, iconSizePx);
+        }
         hotseatCellWidthPx = iconSizePx;
         hotseatCellHeightPx = iconSizePx;
 

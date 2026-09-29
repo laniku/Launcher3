@@ -484,18 +484,26 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     }
 
     protected Bitmap getThumbnailOfLastPhoto() {
-        Cursor cursor = MediaStore.Images.Media.query(getContentResolver(),
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] { MediaStore.Images.ImageColumns._ID,
-                    MediaStore.Images.ImageColumns.DATE_TAKEN},
-                null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT 1");
         Bitmap thumb = null;
-        if (cursor.moveToNext()) {
-            int id = cursor.getInt(0);
-            thumb = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(),
-                    id, MediaStore.Images.Thumbnails.MINI_KIND, null);
+        Cursor cursor = null;
+        try {
+            cursor = MediaStore.Images.Media.query(getContentResolver(),
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    new String[] { MediaStore.Images.ImageColumns._ID,
+                        MediaStore.Images.ImageColumns.DATE_TAKEN},
+                    null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT 1");
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(0);
+                thumb = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(),
+                        id, MediaStore.Images.Thumbnails.MINI_KIND, null);
+            }
+        } catch (SecurityException e) {
+            android.util.Log.i(TAG, "Skipping last-photo preview without media access", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
         return thumb;
     }
 
@@ -514,8 +522,10 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
 
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         ArrayList<Uri> uris = savedInstanceState.getParcelableArrayList(TEMP_WALLPAPER_TILES);
-        for (Uri uri : uris) {
-            addTemporaryWallpaperTile(uri);
+        if (uris != null) {
+            for (Uri uri : uris) {
+                addTemporaryWallpaperTile(uri);
+            }
         }
     }
 

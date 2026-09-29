@@ -22,8 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.Region;
-import android.graphics.Region.Op;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -198,7 +196,7 @@ public class BubbleTextView extends TextView {
         destCanvas.scale(getScaleX(), getScaleY(),
                 (getWidth() + padding) / 2, (getHeight() + padding) / 2);
         destCanvas.translate(-getScrollX() + padding / 2, -getScrollY() + padding / 2);
-        destCanvas.clipRect(clipRect, Op.REPLACE);
+        destCanvas.clipRect(clipRect);
         draw(destCanvas);
         destCanvas.restore();
     }
@@ -327,10 +325,10 @@ public class BubbleTextView extends TextView {
         // We enhance the shadow by drawing the shadow twice
         getPaint().setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
         super.draw(canvas);
-        canvas.save(Canvas.CLIP_SAVE_FLAG);
+        canvas.save();
         canvas.clipRect(getScrollX(), getScrollY() + getExtendedPaddingTop(),
                 getScrollX() + getWidth(),
-                getScrollY() + getHeight(), Region.Op.INTERSECT);
+                getScrollY() + getHeight());
         getPaint().setShadowLayer(SHADOW_SMALL_RADIUS, 0.0f, 0.0f, SHADOW_SMALL_COLOUR);
         super.draw(canvas);
         canvas.restore();
